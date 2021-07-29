@@ -5,7 +5,7 @@ export default {
     devtool: 'source-map',
 
     output: {
-        publicPath: 'dist/',
+        publicPath: '/dist/',
     },
 
     plugins: [

@@ -1,13 +1,11 @@
 // SERVER CONSTANTS
+// TODO(mmd): these should not be set as hard constants -- start local vs. start prod should delineate!
 
-export const PUBLIC_SERVER_ADDRESS = 'http://kratos.csail.mit.edu:8919';
-export const LOCAL_SERVER_ADDRESS = 'http://localhost:5000';
-export const SERVER_ADDRESS = LOCAL_SERVER_ADDRESS;
+export const PUBLIC_SERVER_ADDRESS = 'https://server-dot-medg-research-general.uc.r.appspot.com/';
+export const LOCAL_SERVER_ADDRESS = 'http://localhost:5000/';
+export const SERVER_ADDRESS = PUBLIC_SERVER_ADDRESS;
 
-export const PUBLIC_PORT = 8920;
 export const LOCAL_PORT = 3000;
-export const DEFAULT_PORT = LOCAL_PORT;
-
 
 // TUTORIAL CONSTANTS
 

@@ -1,12 +1,11 @@
 import path from 'path';
 import autoprefixer from 'autoprefixer';
-import postcssImport from 'postcss-import';
 import { merge } from 'webpack-merge';
 
 import precss from 'precss';
 
-import development from './dev.config';
-import production from './prod.config';
+import development from './dev.config.js';
+import production from './prod.config.js';
 
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
@@ -55,8 +54,6 @@ const common = {
                     loader: 'style-loader', // inject CSS to page
                 }, {
                     loader: 'css-loader', // translates CSS into CommonJS modules
-                }, {
-                    loader: 'postcss-loader', // Run post css actions
                 }, {
                     loader: 'sass-loader' // compiles Sass to CSS
                 }]
