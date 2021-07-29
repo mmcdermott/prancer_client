@@ -34,3 +34,5 @@ __MACOSX
 users.json
 
 clinical-annotator-lookups.zip
+
+dist/
