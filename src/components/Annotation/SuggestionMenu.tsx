@@ -1,5 +1,7 @@
 import React from 'react'
 import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import Tooltip  from '@material-ui/core/Tooltip'
 import { Check, Clear, Edit, RemoveCircle, Help } from '@material-ui/icons';
 import {
@@ -48,8 +50,10 @@ class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenu
     this.props.onOptionsClose(event, reason)
   }
 
-  handleCUIChange = (id: number) => {
-    this.props.onCUIChange(id)
+  handleCUIChange = (event: any, child: any) => {
+    console.log(event)
+    console.log(child)
+    this.props.onCUIChange(event.target.value)
   }
 
   handleDecisionClick = (result: DECISION_TYPE) => {
@@ -72,11 +76,37 @@ class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenu
           getContentAnchorEl={null}
           elevation={0}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-          transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+          transformOrigin={{ vertical: -5, horizontal: 'center' }}
           keepMounted
           open={this.state.suggestionOpen}
           onClose={this.handleClose}
+          style={{"padding": 0}}
         >
+          {
+            hasOptions && (
+              <Select
+                value={annotationIndex}
+                onChange={this.handleCUIChange}
+                label={"CUI"}
+                variant="standard"
+                className="suggestion-menu-cui-select"
+                MenuProps={{className: 'suggestion-menu-cui-select-dropdown'}}
+              >
+                {
+                  annotations.map((a: any, i: number) => (
+                    <MenuItem
+                      value={i}
+                      key={i}
+                    >
+                      <div className="suggestion-menu-cui-select-item">
+                        {a.labels.length > 0 ? a.labels[0].title : 'empty'}
+                      </div>
+                    </MenuItem>
+                  ))
+                }
+              </Select>
+            )
+          }
           <div
             className={`suggestion-menu-item hover-state ${primaryAnnotation.decision == ACCEPTED ? 'suggestion-menu-selected' : ''}`}
             onClick={() => this.handleDecisionClick(ACCEPTED)}
@@ -118,33 +148,6 @@ class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenu
             </Tooltip>
           </div>
         </Menu>
-        {
-          hasOptions && (
-            <Menu
-              className="options-menu"
-              anchorEl={optionsAnchorEl}
-              getContentAnchorEl={null}
-              elevation={0}
-              anchorOrigin={{ vertical: -5, horizontal: 'center' }}
-              transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-              keepMounted
-              open={this.state.CUIsOpen}
-              onClose={this.handleOptionsClose}
-            >
-              {
-                annotations.map((a: any, i: any) => (
-                  <div
-                    key={a.annotationId + '-' + i}
-                    className={`suggestion-menu-item hover-state ${annotationIndex == i ? 'suggestion-menu-selected' : ''}`}
-                    onClick={() => this.handleCUIChange(i)}
-                  >
-                    {a.labels.length > 0 ? a.labels[0].title : 'empty'}
-                  </div>
-                ))
-              }
-            </Menu>
-          )
-        }
       </div>
     );
   }
