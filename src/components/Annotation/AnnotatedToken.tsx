@@ -8,6 +8,7 @@ import {
 } from './types'
 import Mark from './Mark'
 import { getAnnotationTag, isTokenSelected } from './utils'
+import SuggestionMenu from './SuggestionMenu'
 
 interface AnnotatedTokenProps {
   token: Token
@@ -43,7 +44,10 @@ class AnnotatedToken extends React.Component<AnnotatedTokenProps, AnnotatedToken
     });
   };
 
-  handleSuggestionClose = () => {
+  handleSuggestionClose = (event: any, reason: string) => {
+    console.log("Handle Suggestions Close")
+    console.log(event)
+    console.log(reason)
     this.setState({
       suggestionAnchorEl: null
     });
@@ -54,7 +58,7 @@ class AnnotatedToken extends React.Component<AnnotatedTokenProps, AnnotatedToken
 
     const primaryAnnotation = token.annotations[this.state.annotationIndex]
     onSuggestionUpdate(primaryAnnotation.annotationId, result)
-    this.handleSuggestionClose()
+    this.handleSuggestionClose(null, "handleSuggestionUpdate")
 
     if ( result == ACCEPTED
       || result == ACCEPTED_WITH_NEGATION
@@ -66,12 +70,16 @@ class AnnotatedToken extends React.Component<AnnotatedTokenProps, AnnotatedToken
   }
 
   handleOptionsClick = (event: any) => {
+    console.log(event)
     this.setState({
       optionsAnchorEl: event.currentTarget
     })
   }
 
-  handleOptionsClose = () => {
+  handleOptionsClose = (event: any, reason: string) => {
+    console.log("Handle Options Close")
+    console.log(event)
+    console.log(reason)
     this.setState({
       optionsAnchorEl: null
     });
@@ -80,6 +88,7 @@ class AnnotatedToken extends React.Component<AnnotatedTokenProps, AnnotatedToken
   handleOptionsUpdate = (option: number) => {
     const annotations = this.props.token.annotations;
     this.props.onAnnotationSelection(annotations[option].annotationId);
+
     const primaryAnnotation = annotations[option];
     const isAnnotationSuggestion = (
       primaryAnnotation.creationType == AUTO || primaryAnnotation.creationType == DYNAMIC
@@ -95,7 +104,7 @@ class AnnotatedToken extends React.Component<AnnotatedTokenProps, AnnotatedToken
       annotationIndex: option
     });
 
-    this.handleOptionsClose()
+    // this.handleOptionsClose()
   }
 
   render() {
@@ -170,85 +179,16 @@ class AnnotatedToken extends React.Component<AnnotatedTokenProps, AnnotatedToken
         />
         {
           isAnnotationSuggestion && (
-            <Menu
-              className="suggestion-menu"
-              anchorEl={this.state.suggestionAnchorEl}
-              getContentAnchorEl={null}
-              elevation={0}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-              keepMounted
-              open={Boolean(this.state.suggestionAnchorEl)}
+            <SuggestionMenu
+              suggestionAnchorEl={this.state.suggestionAnchorEl}
+              optionsAnchorEl={this.state.optionsAnchorEl}
+              onCUIChange={this.handleOptionsUpdate}
+              onAnnotationUpdate={this.handleSuggestionUpdate}
               onClose={this.handleSuggestionClose}
-            >
-              <div
-                className={`suggestion-menu-item hover-state ${primaryAnnotation.decision == ACCEPTED ? 'suggestion-menu-selected' : ''}`}
-                onClick={() => this.handleSuggestionUpdate(ACCEPTED)}
-              >
-                <Tooltip title={"Accept"}>
-                  <Check className="suggestion-menu-icon" style={{ color: '#4CAF50' }}/>
-                </Tooltip>
-              </div>
-              <div
-                className={`suggestion-menu-item hover-state ${primaryAnnotation.decision == ACCEPTED_WITH_NEGATION ? 'suggestion-menu-selected' : ''}`}
-                onClick={() => this.handleSuggestionUpdate(ACCEPTED_WITH_NEGATION)}
-              >
-                <Tooltip title={"Accept with Negation"}>
-                  <RemoveCircle className="suggestion-menu-icon" style={{ color: '#fc6f03' }}/>
-                </Tooltip>
-              </div>
-              <div
-                className={`suggestion-menu-item hover-state ${primaryAnnotation.decision == ACCEPTED_WITH_UNCERTAINTY ? 'suggestion-menu-selected' : ''}`}
-                onClick={() => this.handleSuggestionUpdate(ACCEPTED_WITH_UNCERTAINTY)}
-              >
-                <Tooltip title={"Accept with Uncertainty"}>
-                  <Help className="suggestion-menu-icon" style={{ color: '#5c5c5c' }}/>
-                </Tooltip>
-              </div>
-              <div
-                className={`suggestion-menu-item hover-state ${primaryAnnotation.decision == MODIFIED ? 'suggestion-menu-selected' : ''}`}
-                onClick={() => this.handleSuggestionUpdate(MODIFIED)}
-              >
-                <Tooltip title={"Modify"}>
-                  <Edit className="suggestion-menu-icon" style={{ color: '#FFFF00' }}/>
-                </Tooltip>
-              </div>
-              <div
-                className={`suggestion-menu-item hover-state ${primaryAnnotation.decision == REJECTED ? 'suggestion-menu-selected' : ''}`}
-                onClick={() => this.handleSuggestionUpdate(REJECTED)}
-              >
-                <Tooltip title={"Reject"}>
-                  <Clear className="suggestion-menu-icon" style={{ color: '#FF0000' }}/>
-                </Tooltip>
-              </div>
-            </Menu>
-          )
-        }
-        {
-          hasOptions && (
-            <Menu
-              className="options-menu"
-              anchorEl={this.state.optionsAnchorEl}
-              getContentAnchorEl={null}
-              elevation={0}
-              anchorOrigin={{ vertical: -5, horizontal: 'center' }}
-              transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-              keepMounted
-              open={Boolean(this.state.optionsAnchorEl)}
-              onClose={this.handleOptionsClose}
-            >
-              {
-                annotations.map((a, i) => (
-                  <div
-                    key={a.annotationId + '-' + i}
-                    className={`suggestion-menu-item hover-state ${this.state.annotationIndex == i ? 'suggestion-menu-selected' : ''}`}
-                    onClick={() => this.handleOptionsUpdate(i)}
-                  >
-                    {a.labels.length > 0 ? a.labels[0].title : 'empty'}
-                  </div>
-                ))
-              }
-            </Menu>
+              onOptionsClose={this.handleOptionsClose}
+              annotationIndex={this.state.annotationIndex}
+              annotations={annotations}
+            />
           )
         }
       </div>

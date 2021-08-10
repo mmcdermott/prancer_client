@@ -103,11 +103,11 @@ const common = {
 };
 
 let merged;
-merged = merge(production, common);
-//if (TARGET === 'start' || !TARGET) {
-//    merged = merge(development, common);
-//} else if (TARGET === 'build' || !TARGET) {
-//    merged = merge(production, common);
-//}
+// merged = merge(production, common);
+if (TARGET === 'start' || !TARGET) {
+    merged = merge(development, common);
+} else if (TARGET === 'build' || !TARGET) {
+    merged = merge(production, common);
+}
 
 export default merged;
