@@ -55,17 +55,43 @@ class AnnotatedToken extends React.Component<AnnotatedTokenProps, AnnotatedToken
 
   handleSuggestionUpdate = (result: DECISION_TYPE) => {
     const { token, onSuggestionUpdate, onTextSelection } = this.props
+    const { annotationIndex } = this.state
 
-    const primaryAnnotation = token.annotations[this.state.annotationIndex]
+    const primaryAnnotation = token.annotations[annotationIndex]
     onSuggestionUpdate(primaryAnnotation.annotationId, result)
-    this.handleSuggestionClose(null, "handleSuggestionUpdate")
 
-    if ( result == ACCEPTED
-      || result == ACCEPTED_WITH_NEGATION
-      || result == ACCEPTED_WITH_UNCERTAINTY
-      || result == REJECTED
-    ) {
-      onTextSelection(null)
+    const hasOptions = token.annotations.length > 1;
+    const hasUndecidedSuggestion = token.annotations.find(a =>
+      a.creationType != MANUAL && a.decision == UNDECIDED
+    );
+
+    if (hasOptions && hasUndecidedSuggestion) {
+      const greater_than_index = token.annotations.findIndex((a, i) =>
+          a.creationType != MANUAL && a.decision == UNDECIDED && i > annotationIndex
+      );
+      const general_index = token.annotations.findIndex((a, i) =>
+          a.creationType != MANUAL && a.decision == UNDECIDED && i != annotationIndex
+      );
+
+      this.handleOptionsUpdate(greater_than_index >= 0 ? greater_than_index : general_index)
+    } else {
+      if ( result == REJECTED && hasOptions ) {
+        const nonRejectedSuggestionIdx = token.annotations.findIndex(a =>
+          a.creationType != MANUAL && a.decision != REJECTED
+        );
+        if (nonRejectedSuggestionIdx >= 0) {
+          this.handleOptionsUpdate(nonRejectedSuggestionIdx)
+        }
+      }
+      this.handleSuggestionClose(null, "handleSuggestionUpdate")
+
+      if ( result == ACCEPTED
+        || result == ACCEPTED_WITH_NEGATION
+        || result == ACCEPTED_WITH_UNCERTAINTY
+        || result == REJECTED
+      ) {
+        onTextSelection(null)
+      }
     }
   }
 

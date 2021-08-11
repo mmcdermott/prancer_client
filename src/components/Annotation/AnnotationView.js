@@ -295,8 +295,9 @@ class AnnotationView extends React.Component {
       console.log(decision)
     }
 
-    const newAnnotations = annotations.filter(a => a.annotationId !== id);
-    newAnnotations.push(editedAnnotation);
+    const newAnnotations = annotations
+    const editedIndex    = annotations.findIndex(a => a.annotationId === id);
+    newAnnotations.splice(editedIndex, 1, editedAnnotation);
 
     this.setState({
       annotations: newAnnotations
