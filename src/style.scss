@@ -247,29 +247,30 @@
 }
 
 .label-title-text {
-  width: calc(100% - 105px);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   float: left;
+  line-height: 1.25;
+  max-width: calc(100% - 175px);
 }
 
 .label-link {
   float: right;
 }
 
-.label-uncertain-button {
+.label-buttons {
   float: right;
-}
-.label-negate-button {
-  float: right;
-}
-.label-accept-button {
-  float: right;
+  padding-right: 5px;
 }
 
 .label-delete-button {
-  float: right;
+  float: left;
+  padding-right: 5px;
+}
+
+.label-list-item-button {
+  float: left;
 }
 
 .label-confidence {

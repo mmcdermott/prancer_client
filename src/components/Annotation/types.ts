@@ -26,6 +26,12 @@ export const PATIENT_HISTORY = 'patient_history';
 export const FAMILY = 'family';
 export type TARGET_TYPE = typeof PATIENT_NOW | typeof PATIENT_HISTORY | typeof FAMILY
 
+export const ASSERTION_OF_PRESENCE = 'assertion_of_presence';
+export const ASSERTION_OF_ABSENCE = 'assertion_of_absence';
+export const ASSERTION_OF_UNCERTAINTY = 'assertion_of_uncertainty';
+export type ASSERTION_TYPE = typeof ASSERTION_OF_PRESENCE
+  | typeof ASSERTION_OF_ABSENCE | typeof ASSERTION_OF_UNCERTAINTY
+
 export const UNDECIDED = 'undecided';
 export const ACCEPTED_WITH_NEGATION = 'accepted_with_negation';
 export const ACCEPTED_WITH_UNCERTAINTY = 'accepted_with_uncertainty';
@@ -115,6 +121,7 @@ export type Annotation = {
   creationType: CREATION_TYPE;
   decision: DECISION_TYPE;
   target: TARGET_TYPE;
+  assertion: ASSERTION_TYPE;
 }
 
 export type Token = {

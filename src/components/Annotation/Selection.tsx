@@ -14,7 +14,8 @@ import {
   LOG_LABEL_ASSERT,
   LOG_LABEL_MOUSE_ON,
   LOG_LABEL_MOUSE_OFF,
-  CUI_NORMAL, CUI_AMBIGUOUS, CUI_CODELESS
+  CUI_NORMAL, CUI_AMBIGUOUS, CUI_CODELESS,
+  TARGET_TYPE,
 } from './types'
 
 interface SelectionProps {
@@ -62,6 +63,18 @@ class Selection extends React.Component<SelectionProps, SelectionState> {
     const i = selectedLabels.findIndex(l => l.labelId == id)
     if (i >= 0 && i < selectedLabels.length) {
       selectedLabels[i].negated = false
+      selectedLabels[i].uncertain = false
+      setSelectedLabels(selectedLabels)
+    }
+
+    this.props.addLogEntryBound(LOG_LABEL_ASSERT, [id])
+  }
+
+  targetLabel = (id: string, target: TARGET_TYPE) => {
+    const { selectedLabels, setSelectedLabels } = this.props
+    const i = selectedLabels.findIndex(l => l.labelId == id)
+    if (i >= 0 && i < selectedLabels.length) {
+      selectedLabels[i].target = target
       setSelectedLabels(selectedLabels)
     }
 
@@ -137,6 +150,7 @@ class Selection extends React.Component<SelectionProps, SelectionState> {
                   onNegateClick={() => this.negateLabel(label.labelId)}
                   onUncertainClick={() => this.markUncertainLabel(label.labelId)}
                   onAssertClick={() => this.assertLabel(label.labelId)}
+                  onTargetClick={(target) => this.targetLabel(label.labelId, target)}
                   onUMLSClick={() => onUMLSClick(label.labelId)}
                   UMLSInfo={UMLSInfo}
                   onMouseEnter={() => addLogEntryBound(LOG_LABEL_MOUSE_ON, [label.labelId, "selected"])}

@@ -43,7 +43,10 @@ import {
   MODIFIED,
   ACCEPTED,
   ACCEPTED_WITH_NEGATION,
-  ACCEPTED_WITH_UNCERTAINTY
+  ACCEPTED_WITH_UNCERTAINTY,
+  ASSERTION_OF_PRESENCE,
+  ASSERTION_OF_ABSENCE,
+  ASSERTION_OF_UNCERTAINTY
 } from './types.ts';
 import {
   DYNAMIC_SUGGESTIONS_ENABLED
@@ -244,20 +247,30 @@ class AnnotationView extends React.Component {
     }
   }
 
+  onSuggestionAssertionUpdate = (id, assertion) => {
+    this.addLogEntry(LOG_SUGGESTION_ACTION, id, [assertion]);
+
+    const { annotations } = this.state;
+    const editedAnnotation = annotations.find(a => a.annotationId === id);
+    editedAnnotation.assertion = assertion;
+
+    const newAnnotations = annotations
+    const editedIndex    = annotations.findIndex(a => a.annotationId === id);
+    newAnnotations.splice(editedIndex, 1, editedAnnotation);
+
+    this.setState({
+      annotations: newAnnotations
+    }, () => {
+      this.handleSaveAnnotations();
+    });
+  }
+
   onSuggestionTargetUpdate = (id, target) => {
     this.addLogEntry(LOG_SUGGESTION_ACTION, id, [target]);
 
     const { annotations } = this.state;
     const editedAnnotation = annotations.find(a => a.annotationId === id);
     editedAnnotation.target = target;
-
-    var newLabels = [];
-    for (let l of editedAnnotation.labels) {
-      l.target = target
-      newLabels.push(l)
-    }
-    editedAnnotation.labels = newLabels;
-    this.setState({ selectedLabels: newLabels });
 
     const newAnnotations = annotations
     const editedIndex    = annotations.findIndex(a => a.annotationId === id);
@@ -285,38 +298,11 @@ class AnnotationView extends React.Component {
         selectedLabels: newLabels
       });
     } else if (decision === ACCEPTED_WITH_NEGATION) {
-      var newLabels = [];
-      for (let l of editedAnnotation.labels) {
-        l.negated = true
-        l.uncertain = false
-        newLabels.push(l)
-      }
-      editedAnnotation.labels = newLabels;
-      this.setState({
-        selectedLabels: newLabels
-      });
+      editedAnnotation.assertion = ASSERTION_OF_ABSENCE
     } else if (decision === ACCEPTED_WITH_UNCERTAINTY) {
-      var newLabels = [];
-      for (let l of editedAnnotation.labels) {
-        l.negated = false
-        l.uncertain = true
-        newLabels.push(l)
-      }
-      editedAnnotation.labels = newLabels;
-      this.setState({
-        selectedLabels: newLabels
-      });
+      editedAnnotation.assertion = ASSERTION_OF_UNCERTAINTY
     } else if (decision === ACCEPTED) {
-      var newLabels = [];
-      for (let l of editedAnnotation.labels) {
-        l.negated = false
-        l.uncertain = false
-        newLabels.push(l)
-      }
-      editedAnnotation.labels = newLabels;
-      this.setState({
-        selectedLabels: newLabels
-      });
+      editedAnnotation.assertion = ASSERTION_OF_PRESENCE
     } else {
       console.log(decision)
     }
@@ -450,6 +436,12 @@ class AnnotationView extends React.Component {
         this.onAnnotationUpdate(this.state.selectedAnnotationId)
     });
   }
+
+  //setAnnotationProperties = (target: TARGET_TYPE, mode: MODE_TYPE) => {
+  //  if (this.state.selectedAnnotationId) {
+  //    this
+  //  }
+  //}
 
   setSelectedLabels = (labels) => {
     if (this.state.CUIMode != CUI_CODELESS) {

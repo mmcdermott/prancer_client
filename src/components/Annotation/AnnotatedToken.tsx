@@ -4,7 +4,8 @@ import Tooltip  from '@material-ui/core/Tooltip'
 import { Check, Clear, Edit, RemoveCircle, Help } from '@material-ui/icons';
 import {
   ACCEPTED, ACCEPTED_WITH_NEGATION, ACCEPTED_WITH_UNCERTAINTY, AUTO, DECISION_TYPE, Filtermap, Label,
-  MODIFIED, REJECTED, Token, DYNAMIC, MANUAL, UNDECIDED, PATIENT_NOW, PATIENT_HISTORY, FAMILY, TARGET_TYPE
+  MODIFIED, REJECTED, Token, DYNAMIC, MANUAL, UNDECIDED, PATIENT_NOW, PATIENT_HISTORY, FAMILY, TARGET_TYPE,
+  ASSERTION_TYPE, ASSERTION_OF_ABSENCE, ASSERTION_OF_UNCERTAINTY, ASSERTION_OF_PRESENCE,
 } from './types'
 import Mark from './Mark'
 import { getAnnotationTag, isTokenSelected } from './utils'
@@ -182,14 +183,8 @@ class AnnotatedToken extends React.Component<AnnotatedTokenProps, AnnotatedToken
 
     const fill = !hasUndecidedSuggestion;
 
-    const isNegated   = (
-      (primaryAnnotation && primaryAnnotation.decision == ACCEPTED_WITH_NEGATION)
-      || (labels && labels.some( (l: Label) => l.negated ))
-    );
-    const isUncertain   = (
-      (primaryAnnotation && primaryAnnotation.decision == ACCEPTED_WITH_UNCERTAINTY)
-      || (labels && labels.some( (l: Label) => l.uncertain ))
-    );
+    const isNegated = primaryAnnotation && primaryAnnotation.assertion == ASSERTION_OF_ABSENCE;
+    const isUncertain = primaryAnnotation && primaryAnnotation.assertion == ASSERTION_OF_UNCERTAINTY;
     const stripeColor = (isNegated || isUncertain) ? '#ffffff': '';
 
     return (

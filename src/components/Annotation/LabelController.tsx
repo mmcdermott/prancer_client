@@ -17,7 +17,8 @@ import {
   SEARCH_TYPE,
   LOG_LABEL_MOUSE_ON,
   LOG_LABEL_MOUSE_OFF,
-  SEARCH_AUTOMATIC
+  SEARCH_AUTOMATIC,
+  TARGET_TYPE
 } from './types'
 import { filterLabelsByType } from './utils'
 
@@ -124,6 +125,23 @@ class LabelController extends React.Component<LabelControllerProps, LabelControl
     this.props.addLogEntryBound(LOG_LABEL_ADD_UNCERTAIN, [label.labelId, String(i), searchMode])
   }
 
+  addOrChangeTarget = (label: Label, target: TARGET_TYPE, i: number) => {
+    const { selectedLabels, setSelectedLabels, searchMode } = this.props
+
+    const labelAlreadyPresent = selectedLabels.map(l => l.labelId).includes(label.labelId)
+    const labelIdx = labelAlreadyPresent ? selectedLabels.findIndex(l => l.labelId == label.labelId) : selectedLabels.length
+
+    if (labelAlreadyPresent) {
+      selectedLabels[labelIdx].target = target
+      setSelectedLabels(selectedLabels)
+    } else {
+      label.target = target
+      setSelectedLabels([...selectedLabels, label])
+    }
+
+    this.props.addLogEntryBound(LOG_LABEL_ADD_UNCERTAIN, [label.labelId, String(i), searchMode])
+  }
+
   removeLabel = (id: string) => {
     const { selectedLabels, setSelectedLabels } = this.props
     const i = selectedLabels.findIndex(l => l.labelId == id)
@@ -220,6 +238,7 @@ class LabelController extends React.Component<LabelControllerProps, LabelControl
                 onUncertainClick={() => this.addUncertainLabel(label, i)}
                 onAssertClick={() => this.addLabel(label, i)}
                 onDeleteClick={() => this.removeLabel(label.labelId)}
+                onTargetClick={(target) => this.addOrChangeTarget(label, target, i)}
                 onUMLSClick={() => this.props.onUMLSClick(label.labelId)}
                 UMLSInfo={this.props.UMLSInfo}
                 onMouseEnter={() => addLogEntryBound(LOG_LABEL_MOUSE_ON, [label.labelId])}
