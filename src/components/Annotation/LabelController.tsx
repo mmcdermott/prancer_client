@@ -75,71 +75,11 @@ class LabelController extends React.Component<LabelControllerProps, LabelControl
 
     const label_already_present = selectedLabels.map(l => l.labelId).includes(label.labelId)
 
-    label.negated = false
-    label.uncertain = false
-
     if (!label_already_present) {
       setSelectedLabels([...selectedLabels, label])
     }
 
     this.props.addLogEntryBound(LOG_LABEL_ADD, [label.labelId, String(i), searchMode])
-  }
-
-  addNegatedLabel = (label: Label, i: number) => {
-    const { selectedLabels, setSelectedLabels, searchMode } = this.props
-
-    const labelAlreadyPresent = selectedLabels.map(l => l.labelId).includes(label.labelId)
-    const labelIdx = labelAlreadyPresent ? selectedLabels.findIndex(l => l.labelId == label.labelId) : selectedLabels.length
-
-    label.negated = true
-    label.uncertain = false
-
-    if (labelAlreadyPresent) {
-      selectedLabels[labelIdx].negated=true
-      selectedLabels[labelIdx].uncertain=false
-      setSelectedLabels(selectedLabels)
-    } else {
-      setSelectedLabels([...selectedLabels, label])
-    }
-
-    this.props.addLogEntryBound(LOG_LABEL_ADD_NEGATED, [label.labelId, String(i), searchMode])
-  }
-
-  addUncertainLabel = (label: Label, i: number) => {
-    const { selectedLabels, setSelectedLabels, searchMode } = this.props
-
-    const labelAlreadyPresent = selectedLabels.map(l => l.labelId).includes(label.labelId)
-    const labelIdx = labelAlreadyPresent ? selectedLabels.findIndex(l => l.labelId == label.labelId) : selectedLabels.length
-
-    label.negated = false
-    label.uncertain = true
-
-    if (labelAlreadyPresent) {
-      selectedLabels[labelIdx].negated=false
-      selectedLabels[labelIdx].uncertain=true
-      setSelectedLabels(selectedLabels)
-    } else {
-      setSelectedLabels([...selectedLabels, label])
-    }
-
-    this.props.addLogEntryBound(LOG_LABEL_ADD_UNCERTAIN, [label.labelId, String(i), searchMode])
-  }
-
-  addOrChangeTarget = (label: Label, target: TARGET_TYPE, i: number) => {
-    const { selectedLabels, setSelectedLabels, searchMode } = this.props
-
-    const labelAlreadyPresent = selectedLabels.map(l => l.labelId).includes(label.labelId)
-    const labelIdx = labelAlreadyPresent ? selectedLabels.findIndex(l => l.labelId == label.labelId) : selectedLabels.length
-
-    if (labelAlreadyPresent) {
-      selectedLabels[labelIdx].target = target
-      setSelectedLabels(selectedLabels)
-    } else {
-      label.target = target
-      setSelectedLabels([...selectedLabels, label])
-    }
-
-    this.props.addLogEntryBound(LOG_LABEL_ADD_UNCERTAIN, [label.labelId, String(i), searchMode])
   }
 
   removeLabel = (id: string) => {
@@ -234,11 +174,7 @@ class LabelController extends React.Component<LabelControllerProps, LabelControl
                 colormap={colormap}
                 selected={selectedIDs.includes(label.labelId)}
                 onClick={() => this.addLabel(label, i)}
-                onNegateClick={() => this.addNegatedLabel(label, i)}
-                onUncertainClick={() => this.addUncertainLabel(label, i)}
-                onAssertClick={() => this.addLabel(label, i)}
                 onDeleteClick={() => this.removeLabel(label.labelId)}
-                onTargetClick={(target) => this.addOrChangeTarget(label, target, i)}
                 onUMLSClick={() => this.props.onUMLSClick(label.labelId)}
                 UMLSInfo={this.props.UMLSInfo}
                 onMouseEnter={() => addLogEntryBound(LOG_LABEL_MOUSE_ON, [label.labelId])}

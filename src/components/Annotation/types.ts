@@ -101,11 +101,8 @@ export type Category = {
 export type Label = {
   labelId: string;
   title: string;
-  negated: boolean;
-  uncertain: boolean;
   categories: Category[];
   confidence?: CONFIDENCE_TYPE;
-  target: TARGET_TYPE;
 }
 
 export type LabelCounts = { [id: string]: Label & {count: number}; }

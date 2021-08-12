@@ -47,9 +47,6 @@ class AnnotatedToken extends React.Component<AnnotatedTokenProps, AnnotatedToken
   };
 
   handleSuggestionClose = (event: any, reason: string) => {
-    console.log("Handle Suggestions Close")
-    console.log(event)
-    console.log(reason)
     this.setState({
       suggestionAnchorEl: null
     });
@@ -106,16 +103,12 @@ class AnnotatedToken extends React.Component<AnnotatedTokenProps, AnnotatedToken
   }
 
   handleOptionsClick = (event: any) => {
-    console.log(event)
     this.setState({
       optionsAnchorEl: event.currentTarget
     })
   }
 
   handleOptionsClose = (event: any, reason: string) => {
-    console.log("Handle Options Close")
-    console.log(event)
-    console.log(reason)
     this.setState({
       optionsAnchorEl: null
     });

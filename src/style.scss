@@ -164,7 +164,7 @@
   margin-top: 20px;
   padding: 10px 25px;
   border: 1px solid #dddddd;
-  height: 100px;
+  height: 7em;
 }
 
 .selection-clear {
@@ -192,9 +192,34 @@
   white-space: 'nowrap';
 }
 
+.selection-annotation-menu {
+  float: left;
+  padding: 0 5px;
+
+  .target-options {
+    border-right: none;
+    display: flex;
+  }
+
+  .assertion-options {
+  }
+}
+
+.selection-annotation-menu-item {
+  float: left;
+  background-color: #607d8b;
+  margin: 2px;
+  border-radius: 20%;
+
+  &.selected {
+    border: 1px solid;
+    background-color: rgba(75, 89, 96, 1);
+  }
+}
+
 .selection-arrow {
   margin-top: calc(40px - 12px);
-  width: calc(24px + 20px);
+  width: 80px;
   padding: 0 10px;
 }
 
@@ -252,25 +277,16 @@
   text-overflow: ellipsis;
   float: left;
   line-height: 1.25;
-  max-width: calc(100% - 175px);
+  max-width: calc(100% - 20px);
 }
 
 .label-link {
   float: right;
 }
 
-.label-buttons {
+.label-delete-button {
   float: right;
   padding-right: 5px;
-}
-
-.label-delete-button {
-  float: left;
-  padding-right: 5px;
-}
-
-.label-list-item-button {
-  float: left;
 }
 
 .label-confidence {

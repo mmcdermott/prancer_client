@@ -11,6 +11,7 @@ import PauseModal from './PauseModal.tsx';
 import {
   createAnnotation,
   createAnnotationFromToken,
+  getAnnotationText,
   getSelectedText,
   getSelectionSpans,
   generateLabelCounts,
@@ -222,10 +223,14 @@ class AnnotationView extends React.Component {
   }
 
   onAnnotationUpdate = (id) => {
-    const { annotations } = this.state;
+    const { annotations, text } = this.state;
     const editedAnnotation = annotations.find(a => a.annotationId === id);
 
     if (editedAnnotation) {
+      if (!editedAnnotation.text) {
+        editedAnnotation.text = getAnnotationText(editedAnnotation, text)
+      }
+
       editedAnnotation.labels = this.state.selectedLabels;
       editedAnnotation.CUIMode = this.state.CUIMode;
       editedAnnotation.createdAt = Date.now();
@@ -276,7 +281,7 @@ class AnnotationView extends React.Component {
     const editedIndex    = annotations.findIndex(a => a.annotationId === id);
     newAnnotations.splice(editedIndex, 1, editedAnnotation);
 
-    this.setState({
+    thie.setState({
       annotations: newAnnotations
     }, () => {
       this.handleSaveAnnotations();
@@ -437,11 +442,20 @@ class AnnotationView extends React.Component {
     });
   }
 
-  //setAnnotationProperties = (target: TARGET_TYPE, mode: MODE_TYPE) => {
-  //  if (this.state.selectedAnnotationId) {
-  //    this
-  //  }
-  //}
+  onModifyAnnotation = (target, assertion) => {
+    const { annotations, selectedAnnotationId } = this.state
+    let annotation = annotations.find(a => a.annotationId === selectedAnnotationId)
+
+    const annotationIdx = annotations.findIndex(a => a.id === selectedAnnotationId)
+
+    if (target != null) { annotation.target = target }
+    if (assertion != null) { annotation.assertion = assertion }
+
+    const newAnnotations = annotations.filter(a => a.annotationId !== selectedAnnotationId);
+    newAnnotations.push(annotation);
+
+    this.setState({ annotations: newAnnotations }, () => { this.handleSaveAnnotations(); });
+  }
 
   setSelectedLabels = (labels) => {
     if (this.state.CUIMode != CUI_CODELESS) {
@@ -489,6 +503,13 @@ class AnnotationView extends React.Component {
   render() {
     const { primary, secondary } = this.props.theme.palette;
 
+    const { selectedAnnotationId, annotations } = this.state;
+
+    const annotation = selectedAnnotationId === undefined ? null : annotations.find(
+      a => a.annotationId === selectedAnnotationId
+    )
+    const annotationText = annotation && getAnnotationText(annotation, this.state.text)
+
     return (
       <div className="annotation-view" ref={this.setRootRef} onClick={(e) => e.preventDefault()}>
         <div className="row" style={{
@@ -514,7 +535,7 @@ class AnnotationView extends React.Component {
             height: '100%',
           }}>
             <LabelController
-              selectedText={this.state.selectedText}
+              selectedText={this.state.selectedText || (annotation && annotationText)}
               searchedLabels={this.state.searchedLabels}
               selectedLabels={this.state.selectedLabels}
               colormap={this.state.colormap}
@@ -533,7 +554,7 @@ class AnnotationView extends React.Component {
         </div>
         <div className="row" style={{ height: '100%' }}>
           <Selection
-            selectedText={this.state.selectedText}
+            selectedText={this.state.selectedText || (annotation && annotationText)}
             selectedLabels={this.state.selectedLabels}
             colormap={this.state.colormap}
             CUIMode={this.state.CUIMode}
@@ -544,6 +565,8 @@ class AnnotationView extends React.Component {
             onUMLSClick={this.onUMLSClick}
             UMLSInfo={this.state.UMLSInfo}
             addLogEntryBound={this.addLogEntryBound}
+            annotation={annotation}
+            onModifyAnnotation={this.onModifyAnnotation}
           />
         </div>
       </div>

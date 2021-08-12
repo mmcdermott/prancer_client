@@ -1,4 +1,7 @@
-import { Annotation, CUI_TYPE, EXPERIMENT_TYPE, Label, DYNAMIC, UNDECIDED, CharacterSpan, MANUAL, PATIENT_NOW } from '../types'
+import {
+  Annotation, CUI_TYPE, EXPERIMENT_TYPE, Label, DYNAMIC, UNDECIDED, CharacterSpan, MANUAL, PATIENT_NOW,
+  ASSERTION_OF_PRESENCE
+} from '../types'
 
 
 export const createSuggestion = (
@@ -22,7 +25,8 @@ export const createSuggestion = (
     experimentMode,
     creationType: DYNAMIC,
     decision: UNDECIDED,
-    target: PATIENT_NOW
+    target: PATIENT_NOW,
+    assertion: ASSERTION_OF_PRESENCE
   }
 
   return annotation
@@ -63,6 +67,11 @@ export const propagateSuggestions = (
   annotation: Annotation,
   annotations: Annotation[]
 ): Annotation[] => {
+  if (!annotation.text)
+    console.log("Something is wrong!")
+    console.log(annotation)
+    return annotations
+
   const newAnnotation = cleanAnnotation(annotation)
   const { labels, spans, CUIMode, experimentMode, text } = newAnnotation
   const { start } = spans && spans.length > 0 && spans[0]
@@ -94,8 +103,15 @@ export const propagateSuggestions = (
   const currentTime = Date.now();
 
   // add suggestions with same labels to all text matches
+  let num_matches = 0;
   let match
   while ((match = re.exec(fullText)) !== null) {
+    num_matches += 1;
+    if (num_matches > 100) {
+      // Just in case this becomes a runaway loop...
+      break
+    }
+
     if (match.index !== start) {
       const annotationId = currentTime + newSuggestions.length + 1
 

@@ -1,4 +1,6 @@
-import { Annotation, CUI_TYPE, EXPERIMENT_TYPE, Label, MANUAL, Token, PATIENT_NOW } from '../types'
+import {
+  Annotation, CUI_TYPE, EXPERIMENT_TYPE, Label, MANUAL, Token, PATIENT_NOW, ASSERTION_OF_PRESENCE
+} from '../types'
 import { getSelectedText, getSelectionSpans } from './selectionUtils'
 
 export const createAnnotation = (
@@ -20,7 +22,8 @@ export const createAnnotation = (
     experimentMode,
     creationType: MANUAL,
     decision: null,
-    target: PATIENT_NOW
+    target: PATIENT_NOW,
+    assertion: ASSERTION_OF_PRESENCE
   }
 
   return annotation
@@ -44,7 +47,8 @@ export const createAnnotationFromToken = (
     experimentMode,
     creationType: MANUAL,
     decision: null,
-    target: PATIENT_NOW
+    target: PATIENT_NOW,
+    assertion: ASSERTION_OF_PRESENCE
   }
 
   return annotation
@@ -59,4 +63,12 @@ export const isAnnotationSelected = (
   selectedAnnotationId: number
 ): boolean => {
   return selectedAnnotationId === annotation.annotationId
+}
+
+export const getAnnotationText = (annotation: Annotation, text: string): string => {
+  if (annotation.text)
+    return annotation.text
+
+  const text_arr = annotation.spans.map(({ start, end }) => (text.slice(start, end)))
+  return text_arr.join('... ')
 }

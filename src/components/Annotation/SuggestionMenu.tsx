@@ -74,8 +74,6 @@ class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenu
   }
 
   handleCUIChange = (event: any, child: any) => {
-    console.log(event)
-    console.log(child)
     this.props.onCUIChange(event.target.value)
   }
 
@@ -95,6 +93,7 @@ class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenu
       : annotations[0];
     const hasOptions = annotations.length > 1;
 
+    // TODO(mmd): Decouple `decision` and `assertion` paths.
     return (
       <div>
         <Menu

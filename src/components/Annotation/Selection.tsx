@@ -1,6 +1,8 @@
 import React from 'react'
 import Tooltip  from '@material-ui/core/Tooltip'
-import { ArrowForward, Delete, HighlightOff } from '@material-ui/icons'
+import {
+  Delete, HighlightOff, Check, RemoveCircle, Help, SupervisedUserCircle, History, Face
+} from '@material-ui/icons';
 import LabelListItem from './LabelListItem'
 import {
   CUI_TYPE,
@@ -16,7 +18,33 @@ import {
   LOG_LABEL_MOUSE_OFF,
   CUI_NORMAL, CUI_AMBIGUOUS, CUI_CODELESS,
   TARGET_TYPE,
+  ASSERTION_TYPE,
+  Annotation,
+  ASSERTION_OF_PRESENCE, ASSERTION_OF_ABSENCE, ASSERTION_OF_UNCERTAINTY,
+  PATIENT_NOW, PATIENT_HISTORY, FAMILY,
 } from './types'
+
+interface AnnotationOptionMenuItemProps {
+  selected: boolean
+  onClick: () => void
+  title: string
+  color: string
+  Icon: any
+}
+
+const AnnotationOptionMenuItem = (props: AnnotationOptionMenuItemProps) => {
+  const { selected, onClick, title, color, Icon } = props
+  return (
+    <div
+      className={`selection-annotation-menu-item hover-state ${selected ? 'selected' : ''}`}
+      onClick={onClick}
+    >
+      <Tooltip title={title}>
+        <Icon className="selection-annotation-menu-icon" style={{ color: color }}/>
+      </Tooltip>
+    </div>
+  )
+}
 
 interface SelectionProps {
   selectedText: string
@@ -30,6 +58,8 @@ interface SelectionProps {
   onUMLSClick: (cui: string) => void
   UMLSInfo: UMLSDefinition[]
   addLogEntryBound: (action: LOG_TYPE, metadata: string[]) => boolean
+  annotation: Annotation
+  onModifyAnnotation: (target: TARGET_TYPE, assertion: ASSERTION_TYPE) => void
 }
 
 interface SelectionState {
@@ -58,51 +88,12 @@ class Selection extends React.Component<SelectionProps, SelectionState> {
     this.props.addLogEntryBound(LOG_LABEL_REMOVE, [id])
   }
 
-  assertLabel = (id: string) => {
-    const { selectedLabels, setSelectedLabels } = this.props
-    const i = selectedLabels.findIndex(l => l.labelId == id)
-    if (i >= 0 && i < selectedLabels.length) {
-      selectedLabels[i].negated = false
-      selectedLabels[i].uncertain = false
-      setSelectedLabels(selectedLabels)
-    }
-
-    this.props.addLogEntryBound(LOG_LABEL_ASSERT, [id])
+  handleAssertionClick = (assertion: ASSERTION_TYPE) => {
+    this.props.onModifyAnnotation(null, assertion)
   }
 
-  targetLabel = (id: string, target: TARGET_TYPE) => {
-    const { selectedLabels, setSelectedLabels } = this.props
-    const i = selectedLabels.findIndex(l => l.labelId == id)
-    if (i >= 0 && i < selectedLabels.length) {
-      selectedLabels[i].target = target
-      setSelectedLabels(selectedLabels)
-    }
-
-    this.props.addLogEntryBound(LOG_LABEL_ASSERT, [id])
-  }
-
-  markUncertainLabel = (id: string) => {
-    const { selectedLabels, setSelectedLabels } = this.props
-    const i = selectedLabels.findIndex(l => l.labelId == id)
-    if (i >= 0 && i < selectedLabels.length) {
-      selectedLabels[i].negated = false
-      selectedLabels[i].uncertain = true
-      setSelectedLabels(selectedLabels)
-    }
-
-    this.props.addLogEntryBound(LOG_LABEL_MARK_UNCERTAIN, [id])
-  }
-
-  negateLabel = (id: string) => {
-    const { selectedLabels, setSelectedLabels } = this.props
-    const i = selectedLabels.findIndex(l => l.labelId == id)
-    if (i >= 0 && i < selectedLabels.length) {
-      selectedLabels[i].negated = true
-      selectedLabels[i].uncertain = false
-      setSelectedLabels(selectedLabels)
-    }
-
-    this.props.addLogEntryBound(LOG_LABEL_NEGATE, [id])
+  handleTargetClick = (target: TARGET_TYPE) => {
+    this.props.onModifyAnnotation(target, null)
   }
 
   render() {
@@ -116,7 +107,8 @@ class Selection extends React.Component<SelectionProps, SelectionState> {
       addLogEntryBound,
       onCUIModeChange,
       onUMLSClick,
-      UMLSInfo
+      UMLSInfo,
+      annotation
     } = this.props
 
     return (
@@ -135,8 +127,59 @@ class Selection extends React.Component<SelectionProps, SelectionState> {
               <h4><b>{selectedText}</b></h4>
             </div>
 
+            {annotation && 
+              <div className="selection-annotation-menu">
+                <div className="target-options">
+                  <AnnotationOptionMenuItem
+                    selected={annotation && annotation.target == PATIENT_NOW}
+                    onClick={() => this.handleTargetClick(PATIENT_NOW)}
+                    title="About Patient Now"
+                    Icon={Face}
+                    color="#ffffff"
+                  />
+                  <AnnotationOptionMenuItem
+                    selected={annotation && annotation.target == PATIENT_HISTORY}
+                    onClick={() => this.handleTargetClick(PATIENT_HISTORY)}
+                    title="About Patient's History"
+                    Icon={History}
+                    color='#ffffff'
+                  />
+                  <AnnotationOptionMenuItem
+                    selected={annotation && annotation.target == FAMILY}
+                    onClick={() => this.handleTargetClick(FAMILY)}
+                    title="About Patient's Family"
+                    Icon={SupervisedUserCircle}
+                    color='#ffffff'
+                  />
+                </div>
+                <div className="assertion-options">
+                  <AnnotationOptionMenuItem
+                    selected={annotation && annotation.assertion == ASSERTION_OF_PRESENCE}
+                    onClick={() => this.handleAssertionClick(ASSERTION_OF_PRESENCE)}
+                    title="Accept"
+                    Icon={Check}
+                    color="#4CAF50"
+                  />
+                  <AnnotationOptionMenuItem
+                    selected={annotation && annotation.assertion == ASSERTION_OF_ABSENCE}
+                    onClick={() => this.handleAssertionClick(ASSERTION_OF_ABSENCE)}
+                    title="Accept with Negation"
+                    Icon={RemoveCircle}
+                    color='#fc6f03'
+                  />
+                  <AnnotationOptionMenuItem
+                    selected={annotation && annotation.assertion == ASSERTION_OF_UNCERTAINTY}
+                    onClick={() => this.handleAssertionClick(ASSERTION_OF_UNCERTAINTY)}
+                    title="Accept with Uncertainty"
+                    Icon={Help}
+                    color='#5c5c5c'
+                  />
+                </div>
+              </div>
+            }
+
             <div className="selection-arrow">
-              {selectedLabels.length > 0 && <ArrowForward />}
+              {selectedLabels.length > 0 && <h4>{"CUIs:"}</h4>}
             </div>
 
             <div className="selection-labels">
@@ -147,10 +190,6 @@ class Selection extends React.Component<SelectionProps, SelectionState> {
                   label={label}
                   colormap={colormap}
                   onDeleteClick={() => this.removeLabel(label.labelId)}
-                  onNegateClick={() => this.negateLabel(label.labelId)}
-                  onUncertainClick={() => this.markUncertainLabel(label.labelId)}
-                  onAssertClick={() => this.assertLabel(label.labelId)}
-                  onTargetClick={(target) => this.targetLabel(label.labelId, target)}
                   onUMLSClick={() => onUMLSClick(label.labelId)}
                   UMLSInfo={UMLSInfo}
                   onMouseEnter={() => addLogEntryBound(LOG_LABEL_MOUSE_ON, [label.labelId, "selected"])}

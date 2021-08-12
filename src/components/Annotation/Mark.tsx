@@ -19,20 +19,6 @@ export interface MarkProps {
   onClick: Function
 }
 
-    /*
-     *background: repeating-linear-gradient(
-     *  45deg,
-     *    #606dbc,
-     *    #606dbc 10px,
-     *    #465298 10px,
-     *    #465298 20px
-     *);
-     */
-
-//background: 'repeating-linear-gradient(-55deg, #222, #222 10px,#333 10px, #333 20px)',
-
-
-
 const Mark: React.SFC<MarkProps> = props => {
   const main_color = (props.color ? hex2rgba(props.color, props.opacity || 1) : '#dddddd')
   const stripe_color = (props.stripeColor ? hex2rgba(props.stripeColor, props.opacity || 1) : '#dddddd')
