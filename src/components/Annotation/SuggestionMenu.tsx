@@ -3,17 +3,40 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Tooltip  from '@material-ui/core/Tooltip'
-import { Check, Clear, Edit, RemoveCircle, Help } from '@material-ui/icons';
+import { Check, Clear, Edit, RemoveCircle, Help, SupervisedUserCircle, History, Face } from '@material-ui/icons';
 import {
   ACCEPTED, ACCEPTED_WITH_NEGATION, ACCEPTED_WITH_UNCERTAINTY, AUTO, DECISION_TYPE, Filtermap, Label,
-  MODIFIED, REJECTED, Token, DYNAMIC, MANUAL, UNDECIDED 
+  MODIFIED, REJECTED, Token, DYNAMIC, MANUAL, UNDECIDED, PATIENT_NOW, PATIENT_HISTORY, FAMILY, TARGET_TYPE
 } from './types'
+
+interface SuggestionMenuItemProps {
+  selected: boolean
+  onClick: () => void
+  title: string
+  color: string
+  Icon: any
+}
+
+const SuggestionMenuItem = (props: SuggestionMenuItemProps) => {
+  const { selected, onClick, title, color, Icon } = props
+  return (
+    <div
+      className={`suggestion-menu-item hover-state ${selected ? 'suggestion-menu-selected' : ''}`}
+      onClick={onClick}
+    >
+      <Tooltip title={title}>
+        <Icon className="suggestion-menu-icon" style={{ color: color }}/>
+      </Tooltip>
+    </div>
+  )
+}
 
 interface SuggestionMenuProps {
   suggestionAnchorEl: any
   optionsAnchorEl: any
   onCUIChange: (id: number) => void
   onAnnotationUpdate: (decision: DECISION_TYPE) => void
+  onAnnotationTargetUpdate: (target: TARGET_TYPE) => void
   onClose: (event: any, reason: string) => void
   onOptionsClose: (event: any, reason: string) => void
   annotationIndex: number
@@ -58,6 +81,10 @@ class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenu
 
   handleDecisionClick = (result: DECISION_TYPE) => {
     this.props.onAnnotationUpdate(result)
+  }
+
+  handleTargetClick = (result: TARGET_TYPE) => {
+    this.props.onAnnotationTargetUpdate(result)
   }
 
   render() {
@@ -107,45 +134,65 @@ class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenu
               </Select>
             )
           }
-          <div
-            className={`suggestion-menu-item hover-state ${primaryAnnotation.decision == ACCEPTED ? 'suggestion-menu-selected' : ''}`}
-            onClick={() => this.handleDecisionClick(ACCEPTED)}
-          >
-            <Tooltip title={"Accept"}>
-              <Check className="suggestion-menu-icon" style={{ color: '#4CAF50' }}/>
-            </Tooltip>
+          <div className="target-options">
+            <SuggestionMenuItem
+              selected={primaryAnnotation.target == PATIENT_NOW}
+              onClick={() => this.handleTargetClick(PATIENT_NOW)}
+              title="About Patient Now"
+              Icon={Face}
+              color="#FFFFFF"
+            />
+            <SuggestionMenuItem
+              selected={primaryAnnotation.target == PATIENT_HISTORY}
+              onClick={() => this.handleTargetClick(PATIENT_HISTORY)}
+              title="About Patient's History"
+              Icon={History}
+              color='#FFFFFF'
+            />
+            <SuggestionMenuItem
+              selected={primaryAnnotation.target == FAMILY}
+              onClick={() => this.handleTargetClick(FAMILY)}
+              title="About Patient's Family"
+              Icon={SupervisedUserCircle}
+              color='#FFFFFF'
+            />
           </div>
-          <div
-            className={`suggestion-menu-item hover-state ${primaryAnnotation.decision == ACCEPTED_WITH_NEGATION ? 'suggestion-menu-selected' : ''}`}
-            onClick={() => this.handleDecisionClick(ACCEPTED_WITH_NEGATION)}
-          >
-            <Tooltip title={"Accept with Negation"}>
-              <RemoveCircle className="suggestion-menu-icon" style={{ color: '#fc6f03' }}/>
-            </Tooltip>
-          </div>
-          <div
-            className={`suggestion-menu-item hover-state ${primaryAnnotation.decision == ACCEPTED_WITH_UNCERTAINTY ? 'suggestion-menu-selected' : ''}`}
-            onClick={() => this.handleDecisionClick(ACCEPTED_WITH_UNCERTAINTY)}
-          >
-            <Tooltip title={"Accept with Uncertainty"}>
-              <Help className="suggestion-menu-icon" style={{ color: '#5c5c5c' }}/>
-            </Tooltip>
-          </div>
-          <div
-            className={`suggestion-menu-item hover-state ${primaryAnnotation.decision == MODIFIED ? 'suggestion-menu-selected' : ''}`}
-            onClick={() => this.handleDecisionClick(MODIFIED)}
-          >
-            <Tooltip title={"Modify"}>
-              <Edit className="suggestion-menu-icon" style={{ color: '#FFFF00' }}/>
-            </Tooltip>
-          </div>
-          <div
-            className={`suggestion-menu-item hover-state ${primaryAnnotation.decision == REJECTED ? 'suggestion-menu-selected' : ''}`}
-            onClick={() => this.handleDecisionClick(REJECTED)}
-          >
-            <Tooltip title={"Reject"}>
-              <Clear className="suggestion-menu-icon" style={{ color: '#FF0000' }}/>
-            </Tooltip>
+          <div className="cui-options">
+            <SuggestionMenuItem
+              selected={primaryAnnotation.decision == ACCEPTED}
+              onClick={() => this.handleDecisionClick(ACCEPTED)}
+              title="Accept"
+              Icon={Check}
+              color="#4CAF50"
+            />
+            <SuggestionMenuItem
+              selected={primaryAnnotation.decision == ACCEPTED_WITH_NEGATION}
+              onClick={() => this.handleDecisionClick(ACCEPTED_WITH_NEGATION)}
+              title="Accept with Negation"
+              Icon={RemoveCircle}
+              color='#fc6f03'
+            />
+            <SuggestionMenuItem
+              selected={primaryAnnotation.decision == ACCEPTED_WITH_UNCERTAINTY}
+              onClick={() => this.handleDecisionClick(ACCEPTED_WITH_UNCERTAINTY)}
+              title="Accept with Uncertainty"
+              Icon={Help}
+              color='#5c5c5c'
+            />
+            <SuggestionMenuItem
+              selected={primaryAnnotation.decision == MODIFIED}
+              onClick={() => this.handleDecisionClick(MODIFIED)}
+              title="Modify"
+              Icon={Edit}
+              color='#FFFF00'
+            />
+            <SuggestionMenuItem
+              selected={primaryAnnotation.decision == REJECTED}
+              onClick={() => this.handleDecisionClick(REJECTED)}
+              title="Reject"
+              Icon={Clear}
+              color='#FF0000'
+            />
           </div>
         </Menu>
       </div>

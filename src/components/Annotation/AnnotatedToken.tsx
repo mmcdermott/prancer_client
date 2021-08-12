@@ -4,7 +4,7 @@ import Tooltip  from '@material-ui/core/Tooltip'
 import { Check, Clear, Edit, RemoveCircle, Help } from '@material-ui/icons';
 import {
   ACCEPTED, ACCEPTED_WITH_NEGATION, ACCEPTED_WITH_UNCERTAINTY, AUTO, DECISION_TYPE, Filtermap, Label,
-  MODIFIED, REJECTED, Token, DYNAMIC, MANUAL, UNDECIDED 
+  MODIFIED, REJECTED, Token, DYNAMIC, MANUAL, UNDECIDED, PATIENT_NOW, PATIENT_HISTORY, FAMILY, TARGET_TYPE
 } from './types'
 import Mark from './Mark'
 import { getAnnotationTag, isTokenSelected } from './utils'
@@ -16,6 +16,7 @@ interface AnnotatedTokenProps {
   selectedAnnotationId: number
   onAnnotationSelection: (id: number) => void
   onSuggestionUpdate: (id: number, decision: DECISION_TYPE) => void
+  onSuggestionTargetUpdate: (id: number, target: TARGET_TYPE) => void
   onTextSelection: (selection: Selection) => void
   onMouseEnter: () => void
   onMouseLeave: () => void
@@ -52,6 +53,14 @@ class AnnotatedToken extends React.Component<AnnotatedTokenProps, AnnotatedToken
       suggestionAnchorEl: null
     });
   };
+
+  handleSuggestionTargetUpdate = (target: TARGET_TYPE) => {
+    const { token, onSuggestionTargetUpdate, onTextSelection } = this.props
+    const { annotationIndex } = this.state
+
+    const primaryAnnotation = token.annotations[annotationIndex]
+    onSuggestionTargetUpdate(primaryAnnotation.annotationId, target)
+  }
 
   handleSuggestionUpdate = (result: DECISION_TYPE) => {
     const { token, onSuggestionUpdate, onTextSelection } = this.props
@@ -210,6 +219,7 @@ class AnnotatedToken extends React.Component<AnnotatedTokenProps, AnnotatedToken
               optionsAnchorEl={this.state.optionsAnchorEl}
               onCUIChange={this.handleOptionsUpdate}
               onAnnotationUpdate={this.handleSuggestionUpdate}
+              onAnnotationTargetUpdate={this.handleSuggestionTargetUpdate}
               onClose={this.handleSuggestionClose}
               onOptionsClose={this.handleOptionsClose}
               annotationIndex={this.state.annotationIndex}

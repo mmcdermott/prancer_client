@@ -1,4 +1,4 @@
-import { Annotation, CUI_TYPE, EXPERIMENT_TYPE, Label, DYNAMIC, UNDECIDED, CharacterSpan, MANUAL } from '../types'
+import { Annotation, CUI_TYPE, EXPERIMENT_TYPE, Label, DYNAMIC, UNDECIDED, CharacterSpan, MANUAL, PATIENT_NOW } from '../types'
 
 
 export const createSuggestion = (
@@ -21,7 +21,8 @@ export const createSuggestion = (
     CUIMode,
     experimentMode,
     creationType: DYNAMIC,
-    decision: UNDECIDED
+    decision: UNDECIDED,
+    target: PATIENT_NOW
   }
 
   return annotation

@@ -1,4 +1,4 @@
-import { Label } from './types'
+import { Label, PATIENT_NOW } from './types'
 
 const SAMPLE_LABELS: Label[] = [
   {
@@ -7,6 +7,7 @@ const SAMPLE_LABELS: Label[] = [
     categories: [{ title: 'category', type: 'general' }],
     negated: false,
     uncertain: false,
+    target: PATIENT_NOW,
   },
   {
     labelId: 'C001',
@@ -14,6 +15,7 @@ const SAMPLE_LABELS: Label[] = [
     categories: [{ title: 'category', type: 'general' }],
     negated: false,
     uncertain: false,
+    target: PATIENT_NOW,
   },
   {
     labelId: 'C002',
@@ -21,6 +23,7 @@ const SAMPLE_LABELS: Label[] = [
     categories: [{ title: 'category', type: 'general' }],
     negated: false,
     uncertain: false,
+    target: PATIENT_NOW,
   }
 ]
 

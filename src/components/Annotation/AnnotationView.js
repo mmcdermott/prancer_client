@@ -244,6 +244,32 @@ class AnnotationView extends React.Component {
     }
   }
 
+  onSuggestionTargetUpdate = (id, target) => {
+    this.addLogEntry(LOG_SUGGESTION_ACTION, id, [target]);
+
+    const { annotations } = this.state;
+    const editedAnnotation = annotations.find(a => a.annotationId === id);
+    editedAnnotation.target = target;
+
+    var newLabels = [];
+    for (let l of editedAnnotation.labels) {
+      l.target = target
+      newLabels.push(l)
+    }
+    editedAnnotation.labels = newLabels;
+    this.setState({ selectedLabels: newLabels });
+
+    const newAnnotations = annotations
+    const editedIndex    = annotations.findIndex(a => a.annotationId === id);
+    newAnnotations.splice(editedIndex, 1, editedAnnotation);
+
+    this.setState({
+      annotations: newAnnotations
+    }, () => {
+      this.handleSaveAnnotations();
+    });
+  }
+
   onSuggestionUpdate = (id, decision) => {
     this.addLogEntry(LOG_SUGGESTION_ACTION, id, [decision]);
 
@@ -487,6 +513,7 @@ class AnnotationView extends React.Component {
               onAnnotationCreationToken={this.onAnnotationCreationToken}
               onAnnotationSelection={this.onAnnotationSelection}
               onSuggestionUpdate={this.onSuggestionUpdate}
+              onSuggestionTargetUpdate={this.onSuggestionTargetUpdate}
               onTextSelection={this.onTextSelection}
               addLogEntryBound={this.addLogEntryBound}
             />

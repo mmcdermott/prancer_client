@@ -1,4 +1,4 @@
-import { Annotation, CUI_TYPE, EXPERIMENT_TYPE, Label, MANUAL, Token } from '../types'
+import { Annotation, CUI_TYPE, EXPERIMENT_TYPE, Label, MANUAL, Token, PATIENT_NOW } from '../types'
 import { getSelectedText, getSelectionSpans } from './selectionUtils'
 
 export const createAnnotation = (
@@ -19,7 +19,8 @@ export const createAnnotation = (
     CUIMode,
     experimentMode,
     creationType: MANUAL,
-    decision: null
+    decision: null,
+    target: PATIENT_NOW
   }
 
   return annotation
@@ -42,7 +43,8 @@ export const createAnnotationFromToken = (
     CUIMode,
     experimentMode,
     creationType: MANUAL,
-    decision: null
+    decision: null,
+    target: PATIENT_NOW
   }
 
   return annotation

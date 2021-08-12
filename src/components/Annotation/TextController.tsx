@@ -4,6 +4,7 @@ import { createTokensWithAnnotations } from './utils'
 import {
   Annotation,
   DECISION_TYPE,
+  TARGET_TYPE,
   Filtermap,
   Token,
   LOG_TYPE,
@@ -45,6 +46,7 @@ interface TextControllerProps {
   onAnnotationCreationToken: (token: Token) => Number
   onAnnotationSelection: (id: number) => void
   onSuggestionUpdate: (id: number, decision: DECISION_TYPE) => void
+  onSuggestionTargetUpdate: (id: number, target: TARGET_TYPE) => void
   onTextSelection: (selection: Selection) => void
   addLogEntryBound: (action: LOG_TYPE, metadata: string[]) => boolean
 }
@@ -95,6 +97,7 @@ class TextController extends React.Component<TextControllerProps, TextController
           selectedAnnotationId={this.props.selectedAnnotationId}
           onAnnotationSelection={this.props.onAnnotationSelection}
           onSuggestionUpdate={this.props.onSuggestionUpdate}
+          onSuggestionTargetUpdate={this.props.onSuggestionTargetUpdate}
           onTextSelection={this.props.onTextSelection}
           onMouseEnter={() => this.props.addLogEntryBound(LOG_ANNOTATION_MOUSE_ON, [String(start), String(end)])}
           onMouseLeave={() => this.props.addLogEntryBound(LOG_ANNOTATION_MOUSE_OFF, [String(start), String(end)])}

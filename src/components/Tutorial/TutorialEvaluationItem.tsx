@@ -245,6 +245,7 @@ const TutorialEvaluationItem: React.SFC<TutorialEvaluationItemProps> = props => 
           selectedAnnotationId = {null}
           onAnnotationSelection = {null}
           onSuggestionUpdate = {null}
+          onSuggestionTargetUpdate = {null}
           onTextSelection = {null}
           onMouseEnter = {null}
           onMouseLeave = {null}

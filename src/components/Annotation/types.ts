@@ -21,6 +21,11 @@ export const AUTO = 'auto';
 export const DYNAMIC = 'dynamic';
 export type CREATION_TYPE = typeof MANUAL | typeof AUTO | typeof DYNAMIC;
 
+export const PATIENT_NOW = 'patient_now';
+export const PATIENT_HISTORY = 'patient_history';
+export const FAMILY = 'family';
+export type TARGET_TYPE = typeof PATIENT_NOW | typeof PATIENT_HISTORY | typeof FAMILY
+
 export const UNDECIDED = 'undecided';
 export const ACCEPTED_WITH_NEGATION = 'accepted_with_negation';
 export const ACCEPTED_WITH_UNCERTAINTY = 'accepted_with_uncertainty';
@@ -94,6 +99,7 @@ export type Label = {
   uncertain: boolean;
   categories: Category[];
   confidence?: CONFIDENCE_TYPE;
+  target: TARGET_TYPE;
 }
 
 export type LabelCounts = { [id: string]: Label & {count: number}; }
@@ -108,6 +114,7 @@ export type Annotation = {
   experimentMode: EXPERIMENT_TYPE;
   creationType: CREATION_TYPE;
   decision: DECISION_TYPE;
+  target: TARGET_TYPE;
 }
 
 export type Token = {

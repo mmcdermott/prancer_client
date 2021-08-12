@@ -1,4 +1,4 @@
-import { Annotation, Label, LabelCounts } from '../types'
+import { Annotation, Label, LabelCounts, PATIENT_NOW } from '../types'
 
 export const generateLabelCounts = (annotations: Annotation[]) => {
   const labelsWithCounts: LabelCounts = {}
@@ -29,6 +29,7 @@ export const nMostCommonLabels = (labelCounts: LabelCounts, n: number): Label[] 
     categories: l.categories,
     negated: false,
     uncertain: false,
+    target: PATIENT_NOW
   }))
 }
 
