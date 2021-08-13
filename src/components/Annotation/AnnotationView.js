@@ -281,7 +281,7 @@ class AnnotationView extends React.Component {
     const editedIndex    = annotations.findIndex(a => a.annotationId === id);
     newAnnotations.splice(editedIndex, 1, editedAnnotation);
 
-    thie.setState({
+    this.setState({
       annotations: newAnnotations
     }, () => {
       this.handleSaveAnnotations();
