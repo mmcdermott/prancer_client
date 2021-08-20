@@ -15,12 +15,14 @@ interface AnnotatedTokenProps {
   token: Token
   colormap: Filtermap<string>
   selectedAnnotationId: number
+  onDeleteLabel: (annotationId: number, labelIndex: number) => void
   onAnnotationSelection: (id: number) => void
   onSuggestionUpdate: (id: number, decision: DECISION_TYPE) => void
   onSuggestionTargetUpdate: (id: number, target: TARGET_TYPE) => void
   onTextSelection: (selection: Selection) => void
   onMouseEnter: () => void
   onMouseLeave: () => void
+  containerRect: any
 }
 
 interface AnnotatedTokenState {
@@ -81,14 +83,14 @@ class AnnotatedToken extends React.Component<AnnotatedTokenProps, AnnotatedToken
           a.creationType != MANUAL && a.decision == UNDECIDED && i != annotationIndex
       );
 
-      this.handleOptionsUpdate(greater_than_index >= 0 ? greater_than_index : general_index)
+      //this.handleOptionsUpdate(greater_than_index >= 0 ? greater_than_index : general_index)
     } else {
       if ( result == REJECTED && hasOptions ) {
         const nonRejectedSuggestionIdx = token.annotations.findIndex(a =>
           a.creationType != MANUAL && a.decision != REJECTED
         );
         if (nonRejectedSuggestionIdx >= 0) {
-          this.handleOptionsUpdate(nonRejectedSuggestionIdx)
+          //this.handleOptionsUpdate(nonRejectedSuggestionIdx)
         }
       }
       this.handleSuggestionClose(null, "handleSuggestionUpdate")
@@ -107,12 +109,6 @@ class AnnotatedToken extends React.Component<AnnotatedTokenProps, AnnotatedToken
     this.setState({
       optionsAnchorEl: event.currentTarget
     })
-  }
-
-  handleOptionsClose = (event: any, reason: string) => {
-    this.setState({
-      optionsAnchorEl: null
-    });
   }
 
   handleOptionsUpdate = (option: number) => {
@@ -181,6 +177,12 @@ class AnnotatedToken extends React.Component<AnnotatedTokenProps, AnnotatedToken
     const isUncertain = primaryAnnotation && primaryAnnotation.assertion == ASSERTION_OF_UNCERTAINTY;
     const stripeColor = (isNegated || isUncertain) ? '#ffffff': '';
 
+    let alignmentMode;
+    if (this.state.suggestionAnchorEl) {
+      const rect = this.state.suggestionAnchorEl.getBoundingClientRect()
+      alignmentMode = rect.right > this.props.containerRect.right - 150 ? 'edge' : 'center'
+    }
+
     return (
       <div
         key={`${span.start}-${span.end}`}
@@ -204,13 +206,13 @@ class AnnotatedToken extends React.Component<AnnotatedTokenProps, AnnotatedToken
         {
           isAnnotationSuggestion && (
             <SuggestionMenu
+              alignmentMode={alignmentMode}
               suggestionAnchorEl={this.state.suggestionAnchorEl}
               optionsAnchorEl={this.state.optionsAnchorEl}
-              onCUIChange={this.handleOptionsUpdate}
+              onCUIDelete={this.props.onDeleteLabel}
               onAnnotationUpdate={this.handleSuggestionUpdate}
               onAnnotationTargetUpdate={this.handleSuggestionTargetUpdate}
               onClose={this.handleSuggestionClose}
-              onOptionsClose={this.handleOptionsClose}
               annotationIndex={this.state.annotationIndex}
               annotations={annotations}
             />

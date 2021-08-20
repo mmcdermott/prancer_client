@@ -407,14 +407,16 @@ input[type=submit] {
   padding: 10px 0;
 }
 
-.target-options {
-  border-left: 1px solid #445a65;
-  padding-right: 0.5em;
-}
+.suggestion-menu {
+  .target-options {
+    border-left: 1px solid #445a65;
+    padding-right: 0.5em;
+  }
 
-.cui-options {
-  border-right: 1px solid #445a65;
-  padding-left: 0.5em;
+  .cui-options {
+    border-right: 1px solid #445a65;
+    padding-left: 0.5em;
+  }
 }
 
 .suggestion-menu {

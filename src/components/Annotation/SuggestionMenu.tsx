@@ -35,13 +35,13 @@ const SuggestionMenuItem = (props: SuggestionMenuItemProps) => {
 interface SuggestionMenuProps {
   suggestionAnchorEl: any
   optionsAnchorEl: any
-  onCUIChange: (id: number) => void
+  onCUIDelete: (annotationId: number, labelIndex: number) => void
   onAnnotationUpdate: (decision: DECISION_TYPE) => void
   onAnnotationTargetUpdate: (target: TARGET_TYPE) => void
   onClose: (event: any, reason: string) => void
-  onOptionsClose: (event: any, reason: string) => void
   annotationIndex: number
   annotations: any // TODO: list of objects
+  alignmentMode: string
 }
 
 interface SuggestionMenuState {
@@ -67,16 +67,17 @@ class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenu
     this.props.onClose(event, reason)
   }
 
-  handleOptionsClose = (event: any, reason: string) => {
-    this.props.onOptionsClose(event, reason)
-  }
-
   handleCUIDelete = (index: number) => {
-    console.log("Delete!")
+    const { annotations, annotationIndex, onCUIDelete } = this.props;
+    const primaryAnnotation = annotationIndex < annotations.length
+      ? annotations[annotationIndex]
+      : annotations[0];
+
+    onCUIDelete(primaryAnnotation.annotationId, index)
   }
 
   handleCUIChange = (event: any, child: any) => {
-    this.props.onCUIChange(event.target.value)
+    console.log("THIS ISN'T USED CURRENTLY", event, child)
   }
 
   handleDecisionClick = (result: DECISION_TYPE) => {
@@ -88,12 +89,18 @@ class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenu
   }
 
   render() {
-    const { annotations, suggestionAnchorEl, optionsAnchorEl, annotationIndex } = this.props;
+    const { annotations, suggestionAnchorEl, optionsAnchorEl, annotationIndex, alignmentMode } = this.props;
 
     const primaryAnnotation = annotationIndex < annotations.length
       ? annotations[annotationIndex]
       : annotations[0];
-    const hasOptions = annotations.length > 1;
+
+    if (annotations.length > 1) {
+      console.log("OH NO! Have more than 1 annotation on this token.", annotations)
+    }
+
+    const anchorOrigin    = alignmentMode == 'center' ? 'center' : 'left'
+    const transformOrigin = alignmentMode == 'center' ? 'center' : 'right'
 
     // TODO(mmd): Decouple `decision` and `assertion` paths.
     return (
@@ -102,8 +109,8 @@ class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenu
         anchorEl={suggestionAnchorEl}
         getContentAnchorEl={null}
         elevation={0}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        transformOrigin={{ vertical: -5, horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: anchorOrigin }}
+        transformOrigin={{ vertical: -5, horizontal: transformOrigin }}
         keepMounted
         open={this.state.suggestionOpen}
         onClose={this.handleClose}
@@ -162,21 +169,19 @@ class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenu
           </div>
           <div className="annotation-labels-tagbar">
             {
-              hasOptions && (
-                annotations.map((a: any, i: number) => {
-                  return (
-                    <li key={i}>
-                      <Chip
-                        label     = {a.labels.length > 0 ? a.labels[0].title : 'empty'}
-                        size      = "small"
-                        onDelete  = {() => this.handleCUIDelete(i)}
-                        className = 'suggestion-menu-cui-chip'
-                        variant   = 'outlined'
-                      />
-                    </li>
-                  )
-                })
-              )
+              primaryAnnotation.labels.map((l: Label, i: number) => {
+                return (
+                  <li key={i}>
+                    <Chip
+                      label     = {l.title || 'empty'}
+                      size      = "small"
+                      onDelete  = {() => this.handleCUIDelete(i)}
+                      className = 'suggestion-menu-cui-chip'
+                      variant   = 'outlined'
+                    />
+                  </li>
+                )
+              })
             }
           </div>
         </div>
