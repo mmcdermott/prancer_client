@@ -531,8 +531,8 @@ class AnnotationView extends React.Component {
               addLogEntryBound={this.addLogEntryBound}
             />
           </div>
-          <div className="col-md-4" style={{
-            height: '100%',
+          <div className="col-md-4" tabindex={0} style={{
+            height: '100%', zIndex: 3000
           }}>
             <LabelController
               selectedText={this.state.selectedText || (annotation && annotationText)}
@@ -552,7 +552,7 @@ class AnnotationView extends React.Component {
             />
           </div>
         </div>
-        <div className="row" style={{ height: '100%' }}>
+        <div className="row" tabindex={0} style={{ height: '100%', zIndex: 3000 }}>
           <Selection
             selectedText={this.state.selectedText || (annotation && annotationText)}
             selectedLabels={this.state.selectedLabels}

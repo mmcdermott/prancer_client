@@ -45,7 +45,6 @@ interface SuggestionMenuProps {
 
 interface SuggestionMenuState {
   suggestionOpen: boolean
-  CUIsOpen: boolean
 }
 
 class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenuState> {
@@ -54,14 +53,12 @@ class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenu
 
     this.state = {
       suggestionOpen: Boolean(props.suggestionAnchorEl),
-      CUIsOpen:       Boolean(props.optionsAnchorEl)
     }
   }
 
   static getDerivedStateFromProps(props: SuggestionMenuProps, state: SuggestionMenuState) {
     return {
       suggestionOpen: Boolean(props.suggestionAnchorEl),
-      CUIsOpen:       Boolean(props.optionsAnchorEl)
     }
   }
 
@@ -107,6 +104,8 @@ class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenu
           open={this.state.suggestionOpen}
           onClose={this.handleClose}
           style={{"padding": 0}}
+          disableAutoFocus={true}
+          disableEnforceFocus={true}
         >
           {
             hasOptions && (
