@@ -9,8 +9,6 @@ import configureStore from './store/configureStore.js';
 import routes from './routes.js';
 import './style.scss';
 
-// import 'expose?$!expose?jQuery!jquery';
-
 const store = configureStore();
 
 ReactDOM.render(

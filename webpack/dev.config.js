@@ -19,8 +19,5 @@ export default {
         }),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin(),
-        new webpack.ProvidePlugin({
-            jQuery: 'jquery',
-        }),
     ],
 };

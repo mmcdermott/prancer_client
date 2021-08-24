@@ -1,2 +1,5 @@
 runtime: nodejs14
 service: client
+env_variables:
+  API_URL: 'https://server-dot-medg-research-general.uc.r.appspot.com/'
+  NODE_ENV: 'production'

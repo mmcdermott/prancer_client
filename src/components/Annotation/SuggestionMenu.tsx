@@ -3,6 +3,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Tooltip  from '@material-ui/core/Tooltip'
+import Chip from '@material-ui/core/Chip';
 import { Check, Clear, Edit, RemoveCircle, Help, SupervisedUserCircle, History, Face } from '@material-ui/icons';
 import {
   ACCEPTED, ACCEPTED_WITH_NEGATION, ACCEPTED_WITH_UNCERTAINTY, AUTO, DECISION_TYPE, Filtermap, Label,
@@ -34,18 +35,17 @@ const SuggestionMenuItem = (props: SuggestionMenuItemProps) => {
 interface SuggestionMenuProps {
   suggestionAnchorEl: any
   optionsAnchorEl: any
-  onCUIChange: (id: number) => void
+  onCUIDelete: (annotationId: number, labelIndex: number) => void
   onAnnotationUpdate: (decision: DECISION_TYPE) => void
   onAnnotationTargetUpdate: (target: TARGET_TYPE) => void
   onClose: (event: any, reason: string) => void
-  onOptionsClose: (event: any, reason: string) => void
   annotationIndex: number
   annotations: any // TODO: list of objects
+  alignmentMode: string
 }
 
 interface SuggestionMenuState {
   suggestionOpen: boolean
-  CUIsOpen: boolean
 }
 
 class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenuState> {
@@ -54,14 +54,12 @@ class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenu
 
     this.state = {
       suggestionOpen: Boolean(props.suggestionAnchorEl),
-      CUIsOpen:       Boolean(props.optionsAnchorEl)
     }
   }
 
   static getDerivedStateFromProps(props: SuggestionMenuProps, state: SuggestionMenuState) {
     return {
       suggestionOpen: Boolean(props.suggestionAnchorEl),
-      CUIsOpen:       Boolean(props.optionsAnchorEl)
     }
   }
 
@@ -69,12 +67,17 @@ class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenu
     this.props.onClose(event, reason)
   }
 
-  handleOptionsClose = (event: any, reason: string) => {
-    this.props.onOptionsClose(event, reason)
+  handleCUIDelete = (index: number) => {
+    const { annotations, annotationIndex, onCUIDelete } = this.props;
+    const primaryAnnotation = annotationIndex < annotations.length
+      ? annotations[annotationIndex]
+      : annotations[0];
+
+    onCUIDelete(primaryAnnotation.annotationId, index)
   }
 
   handleCUIChange = (event: any, child: any) => {
-    this.props.onCUIChange(event.target.value)
+    console.log("THIS ISN'T USED CURRENTLY", event, child)
   }
 
   handleDecisionClick = (result: DECISION_TYPE) => {
@@ -86,115 +89,103 @@ class SuggestionMenu extends React.Component<SuggestionMenuProps, SuggestionMenu
   }
 
   render() {
-    const { annotations, suggestionAnchorEl, optionsAnchorEl, annotationIndex } = this.props;
+    const { annotations, suggestionAnchorEl, optionsAnchorEl, annotationIndex, alignmentMode } = this.props;
 
     const primaryAnnotation = annotationIndex < annotations.length
       ? annotations[annotationIndex]
       : annotations[0];
-    const hasOptions = annotations.length > 1;
+
+    if (annotations.length > 1) {
+      console.log("OH NO! Have more than 1 annotation on this token.", annotations)
+    }
+
+    const anchorOrigin    = alignmentMode == 'center' ? 'center' : 'left'
+    const transformOrigin = alignmentMode == 'center' ? 'center' : 'right'
 
     // TODO(mmd): Decouple `decision` and `assertion` paths.
     return (
-      <div>
-        <Menu
-          className="suggestion-menu"
-          anchorEl={suggestionAnchorEl}
-          getContentAnchorEl={null}
-          elevation={0}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-          transformOrigin={{ vertical: -5, horizontal: 'center' }}
-          keepMounted
-          open={this.state.suggestionOpen}
-          onClose={this.handleClose}
-          style={{"padding": 0}}
-        >
-          {
-            hasOptions && (
-              <Select
-                value={annotationIndex}
-                onChange={this.handleCUIChange}
-                label={"CUI"}
-                variant="standard"
-                className="suggestion-menu-cui-select"
-                MenuProps={{className: 'suggestion-menu-cui-select-dropdown'}}
-              >
-                {
-                  annotations.map((a: any, i: number) => (
-                    <MenuItem
-                      value={i}
-                      key={i}
-                    >
-                      <div className="suggestion-menu-cui-select-item">
-                        {a.labels.length > 0 ? a.labels[0].title : 'empty'}
-                      </div>
-                    </MenuItem>
-                  ))
-                }
-              </Select>
-            )
-          }
-          <div className="target-options">
-            <SuggestionMenuItem
-              selected={primaryAnnotation.target == PATIENT_NOW}
-              onClick={() => this.handleTargetClick(PATIENT_NOW)}
-              title="About Patient Now"
-              Icon={Face}
-              color="#FFFFFF"
-            />
-            <SuggestionMenuItem
-              selected={primaryAnnotation.target == PATIENT_HISTORY}
-              onClick={() => this.handleTargetClick(PATIENT_HISTORY)}
-              title="About Patient's History"
-              Icon={History}
-              color='#FFFFFF'
-            />
-            <SuggestionMenuItem
-              selected={primaryAnnotation.target == FAMILY}
-              onClick={() => this.handleTargetClick(FAMILY)}
-              title="About Patient's Family"
-              Icon={SupervisedUserCircle}
-              color='#FFFFFF'
-            />
+      <Menu
+        className="suggestion-menu-overlay"
+        anchorEl={suggestionAnchorEl}
+        getContentAnchorEl={null}
+        elevation={0}
+        anchorOrigin={{ vertical: 'bottom', horizontal: anchorOrigin }}
+        transformOrigin={{ vertical: -5, horizontal: transformOrigin }}
+        keepMounted
+        open={this.state.suggestionOpen}
+        onClose={this.handleClose}
+        style={{"padding": 0}}
+        disableAutoFocus={true}
+        disableEnforceFocus={true}
+      >
+        <div className="suggestion-menu">
+          <div className="annotation-options">
+            <div className="target-options">
+              <SuggestionMenuItem
+                selected={primaryAnnotation.target == PATIENT_NOW}
+                onClick={() => this.handleTargetClick(PATIENT_NOW)}
+                title="About Patient Now"
+                Icon={Face}
+                color="#FFFFFF"
+              />
+              <SuggestionMenuItem
+                selected={primaryAnnotation.target == PATIENT_HISTORY}
+                onClick={() => this.handleTargetClick(PATIENT_HISTORY)}
+                title="About Patient's History"
+                Icon={History}
+                color='#FFFFFF'
+              />
+              <SuggestionMenuItem
+                selected={primaryAnnotation.target == FAMILY}
+                onClick={() => this.handleTargetClick(FAMILY)}
+                title="About Patient's Family"
+                Icon={SupervisedUserCircle}
+                color='#FFFFFF'
+              />
+            </div>
+            <div className="cui-options">
+              <SuggestionMenuItem
+                selected={primaryAnnotation.decision == ACCEPTED}
+                onClick={() => this.handleDecisionClick(ACCEPTED)}
+                title="Accept"
+                Icon={Check}
+                color="#4CAF50"
+              />
+              <SuggestionMenuItem
+                selected={primaryAnnotation.decision == ACCEPTED_WITH_NEGATION}
+                onClick={() => this.handleDecisionClick(ACCEPTED_WITH_NEGATION)}
+                title="Accept with Negation"
+                Icon={RemoveCircle}
+                color='#fc6f03'
+              />
+              <SuggestionMenuItem
+                selected={primaryAnnotation.decision == ACCEPTED_WITH_UNCERTAINTY}
+                onClick={() => this.handleDecisionClick(ACCEPTED_WITH_UNCERTAINTY)}
+                title="Accept with Uncertainty"
+                Icon={Help}
+                color='#5c5c5c'
+              />
+            </div>
           </div>
-          <div className="cui-options">
-            <SuggestionMenuItem
-              selected={primaryAnnotation.decision == ACCEPTED}
-              onClick={() => this.handleDecisionClick(ACCEPTED)}
-              title="Accept"
-              Icon={Check}
-              color="#4CAF50"
-            />
-            <SuggestionMenuItem
-              selected={primaryAnnotation.decision == ACCEPTED_WITH_NEGATION}
-              onClick={() => this.handleDecisionClick(ACCEPTED_WITH_NEGATION)}
-              title="Accept with Negation"
-              Icon={RemoveCircle}
-              color='#fc6f03'
-            />
-            <SuggestionMenuItem
-              selected={primaryAnnotation.decision == ACCEPTED_WITH_UNCERTAINTY}
-              onClick={() => this.handleDecisionClick(ACCEPTED_WITH_UNCERTAINTY)}
-              title="Accept with Uncertainty"
-              Icon={Help}
-              color='#5c5c5c'
-            />
-            <SuggestionMenuItem
-              selected={primaryAnnotation.decision == MODIFIED}
-              onClick={() => this.handleDecisionClick(MODIFIED)}
-              title="Modify"
-              Icon={Edit}
-              color='#FFFF00'
-            />
-            <SuggestionMenuItem
-              selected={primaryAnnotation.decision == REJECTED}
-              onClick={() => this.handleDecisionClick(REJECTED)}
-              title="Reject"
-              Icon={Clear}
-              color='#FF0000'
-            />
+          <div className="annotation-labels-tagbar">
+            {
+              primaryAnnotation.labels.map((l: Label, i: number) => {
+                return (
+                  <li key={i}>
+                    <Chip
+                      label     = {l.title || 'empty'}
+                      size      = "small"
+                      onDelete  = {() => this.handleCUIDelete(i)}
+                      className = 'suggestion-menu-cui-chip'
+                      variant   = 'outlined'
+                    />
+                  </li>
+                )
+              })
+            }
           </div>
-        </Menu>
-      </div>
+        </div>
+      </Menu>
     );
   }
 }

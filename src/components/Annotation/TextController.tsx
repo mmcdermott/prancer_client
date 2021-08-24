@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom';
 import AnnotatedToken from './AnnotatedToken'
 import { createTokensWithAnnotations } from './utils'
 import {
@@ -45,6 +46,7 @@ interface TextControllerProps {
   selectedAnnotationId: number
   onAnnotationCreationToken: (token: Token) => Number
   onAnnotationSelection: (id: number) => void
+  onDeleteLabel: (id: number, index: number) => void
   onSuggestionUpdate: (id: number, decision: DECISION_TYPE) => void
   onSuggestionTargetUpdate: (id: number, target: TARGET_TYPE) => void
   onTextSelection: (selection: Selection) => void
@@ -56,12 +58,21 @@ interface TextControllerState {
 }
 
 class TextController extends React.Component<TextControllerProps, TextControllerState> {
+  ref: any
+  rect: any
+
   constructor(props: TextControllerProps) {
     super(props)
+
+    this.ref = React.createRef();
 
     this.state = {
       anchorEl: null
     }
+  }
+
+  componentDidMount = () => {
+    this.rect = this.ref.current.getBoundingClientRect();
   }
 
   handleSuggestionClick = (event: any) => {
@@ -96,11 +107,13 @@ class TextController extends React.Component<TextControllerProps, TextController
           colormap={this.props.colormap}
           selectedAnnotationId={this.props.selectedAnnotationId}
           onAnnotationSelection={this.props.onAnnotationSelection}
+          onDeleteLabel={this.props.onDeleteLabel}
           onSuggestionUpdate={this.props.onSuggestionUpdate}
           onSuggestionTargetUpdate={this.props.onSuggestionTargetUpdate}
           onTextSelection={this.props.onTextSelection}
           onMouseEnter={() => this.props.addLogEntryBound(LOG_ANNOTATION_MOUSE_ON, [String(start), String(end)])}
           onMouseLeave={() => this.props.addLogEntryBound(LOG_ANNOTATION_MOUSE_OFF, [String(start), String(end)])}
+          containerRect={this.rect}
         />
       )
       : (
@@ -120,7 +133,7 @@ class TextController extends React.Component<TextControllerProps, TextController
     const tokens = createTokensWithAnnotations(text, annotations)
 
     return (
-      <div className="text-controller">
+      <div className="text-controller" ref={this.ref}>
         {tokens.map((token, i) => this.createTokenDisplay(token, i))}
       </div>
     )
