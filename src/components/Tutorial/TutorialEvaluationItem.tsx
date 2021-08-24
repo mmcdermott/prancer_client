@@ -247,8 +247,10 @@ const TutorialEvaluationItem: React.SFC<TutorialEvaluationItemProps> = props => 
           onSuggestionUpdate = {null}
           onSuggestionTargetUpdate = {null}
           onTextSelection = {null}
+          onDeleteLabel = {null}
           onMouseEnter = {null}
           onMouseLeave = {null}
+          containerRect = {null}
         />
       </div>
       <div className="tutorial-evaluation-description">

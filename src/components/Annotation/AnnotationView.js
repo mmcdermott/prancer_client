@@ -468,6 +468,23 @@ class AnnotationView extends React.Component {
     }
   }
 
+  onDeleteLabel = (annotationId, labelIndex) => {
+    const { annotations, selectedAnnotationId } = this.state
+
+    if (annotationId !== selectedAnnotationId) {
+      console.warn("Something is wrong!", selectedAnnotationId, annotationId)
+    }
+
+    let annotation = annotations.find(a => a.annotationId === selectedAnnotationId)
+    const annotationIdx = annotations.findIndex(a => a.annotationId === selectedAnnotationId)
+
+    annotation.labels.splice(labelIndex, 1)
+
+    annotations.splice(annotationIdx, 1, annotation);
+
+    this.setState({ annotations }, () => { this.handleSaveAnnotations(); });
+  }
+
   onUMLSClick = (cui) => {
     this.fetchUMLSInfo(cui);
     this.addLogEntryBound(LOG_LABEL_INFO, [cui]);
@@ -525,6 +542,7 @@ class AnnotationView extends React.Component {
               selectedAnnotationId={this.state.selectedAnnotationId}
               onAnnotationCreationToken={this.onAnnotationCreationToken}
               onAnnotationSelection={this.onAnnotationSelection}
+              onDeleteLabel={this.onDeleteLabel}
               onSuggestionUpdate={this.onSuggestionUpdate}
               onSuggestionTargetUpdate={this.onSuggestionTargetUpdate}
               onTextSelection={this.onTextSelection}
@@ -532,7 +550,7 @@ class AnnotationView extends React.Component {
             />
           </div>
           <div className="col-md-4" style={{
-            height: '100%',
+            height: '100%', zIndex: 3000
           }}>
             <LabelController
               selectedText={this.state.selectedText || (annotation && annotationText)}
@@ -552,7 +570,7 @@ class AnnotationView extends React.Component {
             />
           </div>
         </div>
-        <div className="row" style={{ height: '100%' }}>
+        <div className="row" style={{ height: '100%', zIndex: 3000 }}>
           <Selection
             selectedText={this.state.selectedText || (annotation && annotationText)}
             selectedLabels={this.state.selectedLabels}
