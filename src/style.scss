@@ -4,6 +4,10 @@
   position: relative;
 }
 
+.cuiInfo {
+  z-index: 150000;
+}
+
 .flex {
   flex-grow: 1;
 }
@@ -240,7 +244,6 @@
 }
 
 .label-item-suggestion .label-title {
-  width: calc(100% - 30px);
 }
 
 .cui-menu {
@@ -277,7 +280,6 @@
   text-overflow: ellipsis;
   float: left;
   line-height: 1.25;
-  max-width: calc(100% - 20px);
 }
 
 .label-link {
@@ -553,4 +555,12 @@ input[type=submit] {
   text-align: center;
   color: rgba(96, 125, 139, 1);
   background-color: rgba(96, 125, 139, .1);
+}
+
+.umlsModal {
+  z-index: 13000 !important;
+}
+
+.MuiTooltip-popper[role=tooltip] {
+  z-index: 13000 !important;
 }

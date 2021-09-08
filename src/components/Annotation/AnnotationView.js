@@ -47,7 +47,8 @@ import {
   ACCEPTED_WITH_UNCERTAINTY,
   ASSERTION_OF_PRESENCE,
   ASSERTION_OF_ABSENCE,
-  ASSERTION_OF_UNCERTAINTY
+  ASSERTION_OF_UNCERTAINTY,
+  PATIENT_NOW
 } from './types.ts';
 import {
   DYNAMIC_SUGGESTIONS_ENABLED
@@ -113,6 +114,13 @@ class AnnotationView extends React.Component {
       ? getFile(fileId, './tutorial', './tutorial/users/'+userId)
       : getFile(fileId);
     const data = await file.then((response) => response.data);
+
+    const add_target = (a) => {
+      a.target = PATIENT_NOW;
+      return a;
+    }
+
+    data.file.annotations.map((a) => a.target ? a : add_target(a));
 
     this.setState({
       fileId,

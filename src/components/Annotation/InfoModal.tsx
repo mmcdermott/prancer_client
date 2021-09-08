@@ -60,6 +60,7 @@ class InfoModal extends React.Component<InfoModalProps, InfoModalState> {
         <Modal
           open={this.state.open}
           onClose={this.handleClose}
+          className='umlsModal'
         >
           <div className="modal-content">
             <div className="info-modal-content">
