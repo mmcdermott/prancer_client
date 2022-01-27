@@ -1,7 +1,7 @@
 // SERVER CONSTANTS
 // TODO(mmd): these should not be set as hard constants -- start local vs. start prod should delineate!
 
-export const SERVER_ADDRESS = process.env.API_URL;
+export const SERVER_ADDRESS = 'http://localhost:5000/';//process.env.API_URL;
 console.log(SERVER_ADDRESS)
 
 export const LOCAL_PORT = 3000;

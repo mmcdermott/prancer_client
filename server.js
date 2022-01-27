@@ -5,10 +5,10 @@ import express from 'express';
 import path from 'path';
 import cors from 'cors';
 
-//import webpack  from 'webpack';
-//import webpackConfig from './webpack/common.config.js';
-//import wdm from 'webpack-dev-middleware';
-//import whm from 'webpack-hot-middleware';
+import webpack  from 'webpack';
+import webpackConfig from './webpack/common.config.js';
+import wdm from 'webpack-dev-middleware';
+import whm from 'webpack-hot-middleware';
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -20,18 +20,18 @@ app.use(cors({ credentials: true, origin: SERVER_ADDRESS }));
 
 app.use(express.static(path.join(__dirname, '/')));
 
-//(function initWebpack() {
-//    const compiler = webpack(webpackConfig);
-//
-//    app.use(wdm(compiler, {
-//        publicPath: webpackConfig.output.publicPath,
-//    }));
-//
-//    app.use(whm(compiler, {
-//        log: console.log, path: '/__webpack_hmr', heartbeat: 10 * 1000,
-//    }));
-//
-//}());
+(function initWebpack() {
+    const compiler = webpack(webpackConfig);
+
+    app.use(wdm(compiler, {
+        publicPath: webpackConfig.output.publicPath,
+    }));
+
+    app.use(whm(compiler, {
+        log: console.log, path: '/__webpack_hmr', heartbeat: 10 * 1000,
+    }));
+
+}());
 
 app.get(/.*/, (req, res) => {
     res.sendFile(path.join(__dirname, '/index.html'));
